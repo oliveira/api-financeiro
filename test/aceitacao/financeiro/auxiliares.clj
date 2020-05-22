@@ -1,6 +1,7 @@
 (ns financeiro.auxiliares
   (:require [ring.adapter.jetty :refer [run-jetty]]
-            [api-financeiro.handler :refer [app]]
+            [financeiro.handler :refer [app]]
+            [cheshire.core :as json]
             [clj-http.client :as http]))
 
 (def servidor (atom nil))
@@ -19,3 +20,14 @@
 (def requisicao-para (comp http/get endereco-para))
 
 (defn conteudo [rota] (:body (requisicao-para rota)))
+
+(defn conteudo-como-json [transacao]
+  {:content-type :json
+   :body (json/generate-string transacao)
+   :throw-exceptions false})
+
+(defn despesa [valor]
+  (conteudo-como-json {:valor valor :tipo "despesa"}))
+
+(defn receita [valor]
+  (conteudo-como-json {:valor valor :tipo "receita"}))
