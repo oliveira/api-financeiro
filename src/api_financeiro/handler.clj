@@ -5,6 +5,7 @@
 
 (defroutes app-routes
   (GET "/" [] "Olá, mundo!")
+  (GET "/saldo" [] "0")
   (route/not-found "Recurso não encontrado"))
 
 (def app
