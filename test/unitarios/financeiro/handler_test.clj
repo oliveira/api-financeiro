@@ -1,6 +1,7 @@
 (ns financeiro.handler_test
   (:require [midje.sweet :refer :all]
             [ring.mock.request :as mock]
+            [cheshire.core :as json]
             [api-financeiro.handler :refer :all]))
 
 (facts "Dá um 'Hello World' na rota raiz"
@@ -21,8 +22,14 @@
       (:body response) => "Recurso não encontrado")))
 
 (facts "Saldo inicial é 0" :aceitacao
+  (against-background (json/generate-string {:saldo 0}) => "{\"saldo\":0}")
+
   (let [response (app (mock/request :get "/saldo"))]
+    (fact "o formato é 'application/json'"
+      (get-in response [:headers "Content-Type"]) => "application/json; charset=utf-8")
+
     (fact "o status é 200"
       (:status response) => 200)
-    (fact "o texto do corpo é '0'"
-      (:body response) => "0")))
+
+    (fact "o texto do corpo um json com saldo igual a 0"
+      (:body response) => "{\"saldo\":0}")))
